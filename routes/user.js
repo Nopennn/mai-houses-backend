@@ -8,10 +8,8 @@ const {secret} = require('../config')
 
 
 const createToken = (user_id) => {
-    console.log(user_id)
     const pay_load = {user_id}
     token = jwt.sign(pay_load, secret, {expiresIn:"24h"})
-    console.log(token)
     return token
 }
 
@@ -59,7 +57,7 @@ router.route('/signin').post(async (req, res) => {
         if (!user) user = await User.findOne({$and:[{"email" : req.body.email}, {"password" : req.body.password}]}).exec()
         if (!user) user = await User.findOne({$and:[{"phone" : req.body.phone}, {"password" : req.body.password}]}).exec()
         console.log(user)
-        const token = createToken(user._id)
+        const token = createToken(user._id, user.role)
         doc = await Auth_token.create({"user_id": user._id, "token": token})
         console.log(doc)
     }

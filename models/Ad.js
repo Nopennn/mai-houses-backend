@@ -15,6 +15,20 @@ const schema = new mongoose.Schema({
         minlength: 2,
         trim: true
     },
+    name : {
+        type: String,
+        required: true,
+        maxlength: 255,
+        minlength: 2,
+        trim: true
+    },
+    surname : {
+        type: String,
+        required: true,
+        maxlength: 255,
+        minlength: 2,
+        trim: true
+    },
     phone : {
         type: String,
         required: true,
@@ -29,14 +43,10 @@ const schema = new mongoose.Schema({
         minlength: 0,
         trim: true
     },
-    comment_from_moderator : {
-        type: String,
-        required: true,
-        maxlength: 255,
-        minlength: 0,
-        trim: true
+    photo_links : {
+        type: Array
     },
-    wanted : {
+    comment_from_moderator : {
         type: String,
         required: true,
         maxlength: 255,
@@ -51,17 +61,25 @@ const schema = new mongoose.Schema({
         trim: true
     },
     price : {
-        type: String,
-        required: true,
-        maxlength: 10,
-        minlength: 0,
-        trim: true
+        type: Number,
+        required: true
     },
     type : {
         type: String,
         required: true,
         maxlength: 30,
         minlength: 0,
+        trim: true
+    },
+    age : {
+        type: Number,
+        required: true
+    },
+    gender : {
+        type: String,
+        required: true,
+        maxlength: 1,
+        minlength: 1,
         trim: true
     },
     publish_mode : {

@@ -6,8 +6,8 @@ const check_auth = (token) => {
         if (!token) {
             return false
         }
-        const user_id = jwt.verify(token, secret)
-        return user_id
+        const pay_load = jwt.verify(token, secret)
+        return pay_load.user_id
     } catch (e) {
         console.log(e)
         return false

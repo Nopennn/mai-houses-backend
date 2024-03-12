@@ -47,11 +47,8 @@ const schema = new mongoose.Schema({
         trim: true
     },
     age : {
-        type: String,
-        required: true,
-        maxlength: 3,
-        minlength: 1,
-        trim: true
+        type: Number,
+        required: true
     },
     gender : {
         type: String,
@@ -74,9 +71,12 @@ const schema = new mongoose.Schema({
         minlength: 0,
         trim: true
     },
-    roles : {
-        type: Array,
-        required: true
+    role : {
+        type: String,
+        required: true,
+        maxlength: 30,
+        minlength: 0,
+        trim: true
     },
     tags : {
         type: Array,
@@ -87,5 +87,7 @@ const schema = new mongoose.Schema({
         default: Date.now()
     }
 })
+
+
 
 module.exports = mongoose.model('User', schema);

@@ -8,6 +8,7 @@ const express = require('express'),
 //Connection.connectToMongo()
 
 const Ad = require('../models/Ad')
+const User = require('../models/User')
 const Auth_token = require('../models/Auth_token')
 const check_token = require('../check_token')
 const {secret} = require('../config')
@@ -22,13 +23,11 @@ router.route('/update/:id').post(async (req, res) => {
         const id = req.params.id
         const ad = await Ad.findOne({ "_id": id })
         result = await ad.updateOne({
-            "email": req.body.email,
             "price": req.body.price,
-            "phone": req.body.phone,
+            "photo_links": req.body.photo_links,
             "adress": req.body.adress,
             "tags": req.body.tags,
-            "about": req.body.about,
-            "wanted": req.body.wanted,
+            "about": req.body.about
             })
         result ? res.json({"message": "success"}) : res.json({"message": "fail"})
 
@@ -67,20 +66,26 @@ router.route('/create').post(async (req, res) => {
     if (decoded) {
         let content = []
         user_id = req.body.user_id
+        let doc = await User.findOne({"_id": req.body.user_id}).exec()
         try {
+        
 
         content = await Ad.create({
                 "user_id": req.body.user_id,
-                "email": req.body.email,
+                "email": doc.email,
                 "price": req.body.price,
-                "phone": req.body.phone,
+                "phone": doc.phone,
                 "adress": req.body.adress,
                 "type": req.body.type,
                 "publish_mode": "in_moderation",
                 "comment_from_moderator": "none",
                 "tags": req.body.tags,
                 "about": req.body.about,
-                "wanted": req.body.wanted,
+                "gender": doc.gender,
+                "age": doc.age,
+                "surname": doc.surname,
+                "name": doc.name,
+                "photo_links": req.body.photo_links
                 })
 
             console.log(content)
@@ -102,11 +107,26 @@ router.route('/').post(async (req, res) => {
     let token = req.body.token
     let decoded = check_token(token)
     if (decoded) {
+        let min_price = req.body.min_price ? req.body.min_price : 0
+        let max_price = req.body.max_price ? req.body.max_price : 1000000000000
+        let genders = req.body.genders ? req.body.genders : ["m","f"]
         let tags = req.body.tags ? req.body.tags : []
-        console.log(tags)
+        let types = req.body.types ? req.body.types : ["housing", "person"]
+        let min_age = req.body.min_age ? req.body.min_age : 0
+        let max_age = req.body.max_age ? req.body.max_age : 1000000000000
         let ads = []
         try {
-            ads = await Ad.find({}).exec()
+            ads = await Ad.find({
+                "price": {
+                    $gte: min_price,
+                    $lte: max_price
+                },
+                "gender": { $in: genders },
+                "type": { $in: types },
+                "age": { 
+                    $gte: min_age,
+                    $lte: max_age }
+            }).exec()
             console.log(ads)
         }
         catch (err) {
@@ -126,11 +146,27 @@ router.route('/by_tags').post(async (req, res) => {
     let token = req.body.token
     let decoded = check_token(token)
     if (decoded) {
+        let min_price = req.body.min_price ? req.body.min_price : 0
+        let max_price = req.body.max_price ? req.body.max_price : 1000000000000
+        let genders = req.body.genders ? req.body.genders : ["m","f"]
         let tags = req.body.tags ? req.body.tags : []
-        console.log(tags)
+        let types = req.body.types ? req.body.types : ["housing", "person"]
+        let min_age = req.body.min_age ? req.body.min_age : 0
+        let max_age = req.body.max_age ? req.body.max_age : 1000000000000
         let ads = []
         try {
-            ads = await Ad.find({"tags": { $in: tags } }).exec()
+            ads = await Ad.find({
+            "tags": { $in: tags }, 
+            "price": {
+                $gte: min_price,
+                $lte: max_price
+            },
+            "gender": { $in: genders },
+            "type": { $in: types },
+            "age": { 
+                $gte: min_age,
+                $lte: max_age }
+        }).exec()
             console.log(ads)
         }
         catch (err) {
@@ -148,8 +184,9 @@ router.route('/by_tags').post(async (req, res) => {
 router.route('/moderation_success/:id').post(async (req, res) => {
 
     let token = req.body.token
-    let decoded = check_token(token)
-    if (decoded) {
+    let user_id = check_token(token)
+    let user = await User.findOne({"_id": user_id, "role": "admin"}).exec()
+    if (user) {
         try {
             ad = await Ad.findOne({"_id":req.params.id})
             await ad.updateOne({
@@ -174,8 +211,9 @@ router.route('/moderation_success/:id').post(async (req, res) => {
 router.route('/moderation_reject/:id').post(async (req, res) => {
 
     let token = req.body.token
-    let decoded = check_token(token)
-    if (decoded) {
+    let user_id = check_token(token)
+    let user = await User.findOne({"_id": user_id, "role": "admin"}).exec()
+    if (user) {
 
         try {
             ad = await Ad.findOne({"_id":req.params.id})
@@ -201,8 +239,10 @@ router.route('/moderation_reject/:id').post(async (req, res) => {
 router.route('/in_moderation').post(async (req, res) => {
 
     let token = req.body.token
-    let decoded = check_token(token)
-    if (decoded) {
+    let user_id = check_token(token)
+    let user = await User.findOne({"_id": user_id, "role": "admin"}).exec()
+
+    if (user) {
        
     let ads = []
     try {
@@ -217,7 +257,7 @@ router.route('/in_moderation').post(async (req, res) => {
         
      } else {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
+        res.status(403).json({"message" : "Вы не авторизованы как админ"})
     }
 })
 
