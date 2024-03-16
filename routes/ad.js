@@ -70,17 +70,14 @@ router.route('/delete/:id').post(async (req, res) => {
 router.route('/create').post(async (req, res) => {
 
     let token = req.body.token
-    let decoded = check_token(token)
-    if (decoded) {
+    let user_id = check_token(token)
+    if (user_id) {
         let content = []
-        user_id = req.body.user_id
-        let doc = await User.findOne({"_id": req.body.user_id}).exec()
+        let doc = await User.findOne({"_id": user_id}).exec()
         try {
-        
-
 
         content = await Ad.create({
-                "user_id": req.body.user_id,
+                "user_id": user_id,
                 "email": doc.email,
                 "price": req.body.price,
                 "phone": doc.phone,
