@@ -17,18 +17,21 @@ router.route('/update/:id').post(async (req, res) => {
 
 
     let token = req.body.token
-    let decoded = check_token(token)
-    if (decoded) {
+    let user_id = check_token(token)
+    if (user_id) {
 
         const id = req.params.id
-        const ad = await Ad.findOne({ "_id": id })
+        const ad = await Ad.findOne({ "_id": id})
+        if (ad.user_id == user_id) {
         result = await ad.updateOne({
             "price": req.body.price,
             "photo_links": req.body.photo_links,
             "adress": req.body.adress,
             "tags": req.body.tags,
-            "about": req.body.about
+            "about": req.body.about,
+            "publish_mode": "in_moderation"
             })
+        }
         result ? res.json({"message": "success"}) : res.json({"message": "fail"})
 
     } else {
@@ -43,12 +46,17 @@ router.route('/update/:id').post(async (req, res) => {
 router.route('/delete/:id').post(async (req, res) => {
 
     let token = req.body.token
-    let decoded = check_token(token)
-    if (decoded) {
+    let user_id = check_token(token)
+    if (user_id) {
 
         const id = req.params.id
-        const ad = await Ad.deleteOne({ "_id": id })
-        ad ? res.json({"message": "success"}) : res.json({"message": "fail"})
+        const ad = await Ad.findOne({ "_id": id})
+
+        if (ad.user_id == user_id) {
+            const doc = await Ad.deleteOne({ "_id": id})
+        }
+
+        doc ? res.json({"message": "success"}) : res.json({"message": "fail"})
         
      } else {
         await Auth_token.deleteOne({"token": token})
@@ -69,6 +77,7 @@ router.route('/create').post(async (req, res) => {
         let doc = await User.findOne({"_id": req.body.user_id}).exec()
         try {
         
+
 
         content = await Ad.create({
                 "user_id": req.body.user_id,
@@ -103,7 +112,7 @@ router.route('/create').post(async (req, res) => {
 })
 
 router.route('/').post(async (req, res) => {
-
+// {min peice, max_price,genders, min_age, max_age, types}
     let token = req.body.token
     let decoded = check_token(token)
     if (decoded) {
@@ -117,6 +126,7 @@ router.route('/').post(async (req, res) => {
         let ads = []
         try {
             ads = await Ad.find({
+                "publish_mode": "published",
                 "price": {
                     $gte: min_price,
                     $lte: max_price
@@ -142,6 +152,8 @@ router.route('/').post(async (req, res) => {
 })
 
 router.route('/by_tags').post(async (req, res) => {
+    //tags: ["", ""]
+    // {min peice, max_price,genders, min_age, max_age, types}
 
     let token = req.body.token
     let decoded = check_token(token)
@@ -156,6 +168,7 @@ router.route('/by_tags').post(async (req, res) => {
         let ads = []
         try {
             ads = await Ad.find({
+            "publish_mode": "published",
             "tags": { $in: tags }, 
             "price": {
                 $gte: min_price,
@@ -237,6 +250,7 @@ router.route('/moderation_reject/:id').post(async (req, res) => {
 })
 
 router.route('/in_moderation').post(async (req, res) => {
+    //.../ads/in_moderation
 
     let token = req.body.token
     let user_id = check_token(token)
@@ -290,11 +304,33 @@ router.route('/:id').post(async (req, res) => {
 router.route('/by_user_id/:user_id').post(async (req, res) => {
 
     let token = req.body.token
-    let decoded = check_token(token)
-    if (decoded) {
+    let user_id = check_token(token)
+    if (user_id) {
 
         const user_id = req.params.user_id
 
+        let ad = []
+        try {
+            ad = await Ad.find({"user_id" : user_id, "publish_mode": "published"}).exec()
+            console.log(ad)
+        }
+        catch (err) {
+            throw err
+        }
+    
+        res.json(ad)
+        
+     } else {
+        await Auth_token.deleteOne({"token": token})
+        res.status(403).json({"message" : "Вы не авторизованы"})
+    }
+})
+
+router.route('/all_user_ads/').post(async (req, res) => {
+
+    let token = req.body.token
+    let user_id = check_token(token)
+    if (user_id) {
         let ad = []
         try {
             ad = await Ad.find({"user_id" : user_id}).exec()

@@ -34,7 +34,6 @@ router.route('/update/:id').post(async (req, res) => {
         "surname": req.body.surname,
         "age": req.body.age,
         "gender": req.body.gender,
-        "roles": req.body.roles,
         "tags": req.body.tags,
         "about": req.body.about,
         "wanted": req.body.wanted,
@@ -51,7 +50,7 @@ router.route('/update/:id').post(async (req, res) => {
 router.route('/signin').post(async (req, res) => {
 
     let user
-    
+    //post {"login":,"passsword": }
     try {
         user = await User.findOne({$and:[{"login" : req.body.login}, {"password" : req.body.password}]}).exec()
         if (!user) user = await User.findOne({$and:[{"email" : req.body.email}, {"password" : req.body.password}]}).exec()
@@ -81,13 +80,13 @@ router.route('/signup').post(async (req, res) => {
             "login": req.body.login,
             "password": req.body.password,
             "email": req.body.email,
-            "phone": req.body.phone,
-            "name": req.body.name,
+            "phone": req.body.phone, //""
+            "name": req.body.name, //''
             "surname": req.body.surname,
             "age": req.body.age,
             "gender": req.body.gender,
-            "roles": ["user"],
-            "tags": req.body.tags,
+            "role": "user",
+            "tags": req.body.tags, //[]
             "about": req.body.about,
             "wanted": req.body.wanted,
             })
