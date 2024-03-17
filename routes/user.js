@@ -43,13 +43,15 @@ router.route('/update/').post(async (req, res) => {
         })
     
     const ads = await Ad.updateMany({ "user_id": user_id}, {
-        "email": user.email,
-        "phone": user.phone,
-        "gender": user.gender,
-        "age": user.age,
-        "name": user.name,
-        "surname": user.surname
+        "email": req.body.email,
+        "phone": req.body.phone,
+        "gender": req.body.gender,
+        "age": req.body.age,
+        "name": req.body.name,
+        "surname": req.body.surname
     }); 
+
+
 
     result ? res.json({"message": "success"}) : res.json({"message": "fail"})
 
