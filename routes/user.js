@@ -14,18 +14,21 @@ const createToken = (user_id) => {
 }
 
 const User = require('../models/User')
+const Ad = require('../models/Ad')
 const Auth_token = require('../models/Auth_token')
 
-router.route('/update/:id').post(async (req, res) => {
+router.route('/update/').post(async (req, res) => {
 
     let token = req.body.token
-    let decoded = check_token(token)
-    if (decoded) {
+    let user_id = check_token(token)
+    console.log(user_id)
+    if (!user_id) {
+        await Auth_token.deleteOne({"token": token})
+        res.status(403).json({"message" : "Вы не авторизованы"})
+    }
+    const user = await User.findOne({ "_id": user_id }).exec()
 
-        const id = req.params.id
-        const user = await User.findOne({ "_id": id })
-
-        result = await user.updateOne({
+    result = await user.updateOne({
         "login": req.body.login,
         "password": req.body.password,
         "email": req.body.email,
@@ -38,12 +41,17 @@ router.route('/update/:id').post(async (req, res) => {
         "about": req.body.about,
         "wanted": req.body.wanted,
         })
+    
+    const ads = await Ad.updateMany({ "user_id": user_id}, {
+        "email": user.email,
+        "phone": user.phone,
+        "gender": user.gender,
+        "age": user.age,
+        "name": user.name,
+        "surname": user.surname
+    }); 
 
     result ? res.json({"message": "success"}) : res.json({"message": "fail"})
-     } else {
-        await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
-    }
 
 })
 
@@ -75,7 +83,8 @@ router.route('/signup').post(async (req, res) => {
         user = await User.findOne({ $or:[
             {'login':req.body.login}, {'email':req.body.email},{'phone': req.body.phone}
           ]})
-        if (!user){
+        if (user) res.json({"message": "Такой пользователь существует"})
+
         content = await User.create({
             "login": req.body.login,
             "password": req.body.password,
@@ -92,8 +101,6 @@ router.route('/signup').post(async (req, res) => {
             })
         console.log(content)
         res.json(content)
-
-        } else res.json({"message": "Такой пользователь существует"})
     }
     catch (err) {
         throw err
@@ -107,10 +114,8 @@ router.route('/').post(async (req, res) => {
     let token = req.body.token
     let decoded = check_token(token)
     if (decoded) {
-        console.log(decoded.user_id)
         try {
             content = await User.find({})
-            //console.log(content)
         }
         catch (err) {
             throw err
