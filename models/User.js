@@ -16,7 +16,8 @@ const schema = new mongoose.Schema({
         required: true,
         maxlength: 255,
         minlength: 2,
-        trim: false
+        trim: false,
+        select: false
     },
     name : {
         type: String,
