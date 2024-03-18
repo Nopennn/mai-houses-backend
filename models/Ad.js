@@ -1,6 +1,7 @@
 //const db = require('../ext/db')
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/mai_houses');
+const uri = "mongodb+srv://Makar:1111@cluster0.egdh5vo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+mongoose.connect(uri);
 
 const schema = new mongoose.Schema({
 

@@ -3,7 +3,8 @@ const db = require('mongoose');
 main().catch(err => console.log(err));
 
 async function main() {
-  await db.connect('mongodb://127.0.0.1:27017/mai_houses',
+  const uri = "mongodb+srv://Makar:1111@cluster0.egdh5vo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+  await db.connect( uri,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
