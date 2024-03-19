@@ -16,7 +16,7 @@ const {ad_creation_validator} = require('../validators/ad_creation_validator')
 const {ad_upd_validator} = require('../validators/ad_upd_validator')
 
 router.route('/update/:id').post(async (req, res) => {
-
+    res.set('Access-Control-Allow-Origin', '*');
 
     let token = req.body.token
     let user_id = check_token(token)
@@ -43,6 +43,7 @@ router.route('/update/:id').post(async (req, res) => {
 })
 
 router.route('/delete/:id').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
 
     let token = req.body.token
     let user_id = check_token(token)
@@ -67,6 +68,7 @@ router.route('/delete/:id').post(async (req, res) => {
 
 
 router.route('/create').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
 
     let token = req.body.token
     let user_id = check_token(token)
@@ -108,6 +110,7 @@ router.route('/create').post(async (req, res) => {
 })
 
 router.route('/').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
 // {min peice, max_price,genders, min_age, max_age, types}
     let token = req.body.token
     let decoded = check_token(token)
@@ -148,6 +151,7 @@ router.route('/').post(async (req, res) => {
 })
 
 router.route('/by_tags').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     //tags: ["", ""]
     // {min peice, max_price,genders, min_age, max_age, types}
 
@@ -191,6 +195,7 @@ router.route('/by_tags').post(async (req, res) => {
 })
 
 router.route('/moderation_success/:id').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
 
     let token = req.body.token
     let user_id = check_token(token)
@@ -218,6 +223,7 @@ router.route('/moderation_success/:id').post(async (req, res) => {
 })
 
 router.route('/moderation_reject/:id').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
 
     let token = req.body.token
     let user_id = check_token(token)
@@ -246,6 +252,7 @@ router.route('/moderation_reject/:id').post(async (req, res) => {
 })
 
 router.route('/in_moderation').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     //.../ads/in_moderation
 
     let token = req.body.token
@@ -272,6 +279,7 @@ router.route('/in_moderation').post(async (req, res) => {
 })
 
 router.route('/:id').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
 
     let token = req.body.token
     let decoded = check_token(token)
@@ -298,6 +306,7 @@ router.route('/:id').post(async (req, res) => {
    
 })
 router.route('/by_user_id/:user_id').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
 
     let token = req.body.token
     let user_id = check_token(token)
@@ -323,6 +332,7 @@ router.route('/by_user_id/:user_id').post(async (req, res) => {
 })
 
 router.route('/all_user_ads/').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
 
     let token = req.body.token
     let user_id = check_token(token)

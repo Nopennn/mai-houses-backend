@@ -20,7 +20,7 @@ const Ad = require('../models/Ad')
 const Auth_token = require('../models/Auth_token')
 
 router.route('/update/').post(async (req, res) => {
-
+    res.set('Access-Control-Allow-Origin', '*');
     let token = req.body.token
     let user_id = check_token(token)
     console.log(user_id)
@@ -65,6 +65,7 @@ router.route('/update/').post(async (req, res) => {
 })
 
 router.route('/signin').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
 
     let user
     //post {"login":,"passsword": }
@@ -90,6 +91,7 @@ router.route('/signin').post(async (req, res) => {
 })
 
 router.route('/signup').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     try {
         user = await User.findOne({'login':req.body.login})
         if (user) {
@@ -112,6 +114,7 @@ router.route('/signup').post(async (req, res) => {
 
 
 router.route('/').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     let content = []
     let token = req.body.token
     let decoded = check_token(token)
@@ -131,6 +134,7 @@ router.route('/').post(async (req, res) => {
 })
 
 router.route('/by_tags').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     let content = []
     let token = req.body.token
     let decoded = check_token(token)
@@ -154,6 +158,7 @@ router.route('/by_tags').post(async (req, res) => {
 })
 
 router.route('/:id').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     let token = req.body.token
     let decoded = check_token(token)
     if (decoded) {
