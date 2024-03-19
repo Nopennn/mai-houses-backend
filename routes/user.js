@@ -74,13 +74,15 @@ router.route('/signin').post(async (req, res) => {
             const token = createToken(user._id, user.role)
             doc = await Auth_token.create({"user_id": user._id, "token": token})
             console.log(doc)
-    }
+            res.json({"message": "success", "auth_token": token})
+        } else {
+            res.json({"message": "Нет такого пользователя"})
+        }
+
     }
     catch (err) {
         throw err
     }
-
-user ? res.json({"message": "success", "auth_token": token}) : res.json({"message": "Нет такого пользователя"})
 
 })
 
