@@ -12,14 +12,20 @@ const User = require('../models/User')
 const Auth_token = require('../models/Auth_token')
 const check_token = require('../check_token')
 const {secret} = require('../config')
+const {ad_creation_validator} = require('../validators/ad_creation_validator')
+const {ad_upd_validator} = require('../validators/ad_upd_validator')
 
 router.route('/update/:id').post(async (req, res) => {
 
 
     let token = req.body.token
     let user_id = check_token(token)
-    if (user_id) {
-
+    if (ad_upd_validator(req.body)) {
+        res.status(403).json({"message" : "Недопустимые значения полей"})
+    } else if (!user_id) {
+        await Auth_token.deleteOne({"token": token})
+        res.status(403).json({"message" : "Вы не авторизованы"})
+    } else {
         const id = req.params.id
         const ad = await Ad.findOne({ "_id": id})
         if (ad.user_id == user_id) {
@@ -33,14 +39,7 @@ router.route('/update/:id').post(async (req, res) => {
             })
         }
         result ? res.json({"message": "success"}) : res.json({"message": "fail"})
-
-    } else {
-        await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
     }
-
-    
-
 })
 
 router.route('/delete/:id').post(async (req, res) => {
@@ -71,41 +70,41 @@ router.route('/create').post(async (req, res) => {
 
     let token = req.body.token
     let user_id = check_token(token)
-    if (user_id) {
-        let content = []
-        let doc = await User.findOne({"_id": user_id}).exec()
-        try {
-
-        content = await Ad.create({
-                "user_id": user_id,
-                "email": doc.email,
-                "price": req.body.price,
-                "phone": doc.phone,
-                "adress": req.body.adress,
-                "type": req.body.type,
-                "publish_mode": "in_moderation",
-                "comment_from_moderator": "none",
-                "tags": req.body.tags,
-                "about": req.body.about,
-                "gender": doc.gender,
-                "age": doc.age,
-                "surname": doc.surname,
-                "name": doc.name,
-                "photo_links": req.body.photo_links
-                })
-
-            console.log(content)
-            res.json(content)
-        }
-        catch (err) {
-            throw err
-        }
-        
-     } else {
+    if (ad_creation_validator(req.body)) {
+        res.status(403).json({"message" : "Недопустимые значения полей"})
+    } else if (!user_id) {
         await Auth_token.deleteOne({"token": token})
         res.status(403).json({"message" : "Вы не авторизованы"})
+    } else {
+        let content = []
+        let doc = await User.findOne({"_id": user_id}).exec()
+        if (doc) {
+            try {
+                content = await Ad.create({
+                    "user_id": user_id,
+                    "email": doc.email,
+                    "price": req.body.price,
+                    "phone": doc.phone,
+                    "adress": req.body.adress,
+                    "type": req.body.type,
+                    "publish_mode": "in_moderation",
+                    "comment_from_moderator": "none",
+                    "tags": req.body.tags,
+                    "about": req.body.about,
+                    "gender": doc.gender,
+                    "age": doc.age,
+                    "surname": doc.surname,
+                    "name": doc.name,
+                    "photo_links": req.body.photo_links
+                })
+                console.log(content)
+                res.json(content)
+            }
+            catch (err) {
+                throw err
+            }
+        }
     }
-
 })
 
 router.route('/').post(async (req, res) => {
