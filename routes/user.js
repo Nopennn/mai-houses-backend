@@ -31,8 +31,8 @@ router.route('/update/').post(async (req, res) => {
     else if (upd_user_validator(req.body)) {res.status(403).json({"message" : "Недопустимые значения полей"})} 
     else {
         const user = await User.findOne({ "_id": user_id }).exec()
-
-        result = await user.updateOne({
+        if (user) {
+            result = await user.updateOne({
             "login": req.body.login,
             "password": req.body.password,
             "email": req.body.email,
@@ -55,8 +55,11 @@ router.route('/update/').post(async (req, res) => {
             "name": req.body.name,
             "surname": req.body.surname
         }); 
+        res.json({"message": "success"})
+    } else {
+            res.json({"message": "fail"})
 
-        result ? res.json({"message": "success"}) : res.json({"message": "fail"})
+    }
     }
 
 })
