@@ -3,6 +3,8 @@ const express = require('express'),
     { ObjectId } = require('mongodb')
 
 const jwt = require('jsonwebtoken')
+const {upd_user_validator} = require('../validators/upd_user_validator')
+const {user_creation_validator} = require('../validators/user_creation_validator')
 const check_token = require('../check_token')
 const {secret} = require('../config')
 
@@ -25,35 +27,37 @@ router.route('/update/').post(async (req, res) => {
     if (!user_id) {
         await Auth_token.deleteOne({"token": token})
         res.status(403).json({"message" : "Вы не авторизованы"})
-    }
-    const user = await User.findOne({ "_id": user_id }).exec()
+    } 
+    else if (upd_user_validator(req.body)) {res.status(403).json({"message" : "Недопустимые значения полей"})} 
+    else {
+        const user = await User.findOne({ "_id": user_id }).exec()
 
-    result = await user.updateOne({
-        "login": req.body.login,
-        "password": req.body.password,
-        "email": req.body.email,
-        "phone": req.body.phone,
-        "name": req.body.name,
-        "surname": req.body.surname,
-        "age": req.body.age,
-        "gender": req.body.gender,
-        "tags": req.body.tags,
-        "about": req.body.about,
-        "wanted": req.body.wanted,
-        })
+        result = await user.updateOne({
+            "login": req.body.login,
+            "password": req.body.password,
+            "email": req.body.email,
+            "phone": req.body.phone,
+            "name": req.body.name,
+            "surname": req.body.surname,
+            "age": req.body.age,
+            "gender": req.body.gender,
+            "tags": req.body.tags,
+            "about": req.body.about,
+            "wanted": req.body.wanted,
+            "photo": req.body.photo,
+            })
     
-    const ads = await Ad.updateMany({ "user_id": user_id}, {
-        "email": req.body.email,
-        "phone": req.body.phone,
-        "gender": req.body.gender,
-        "age": req.body.age,
-        "name": req.body.name,
-        "surname": req.body.surname
-    }); 
+        const ads = await Ad.updateMany({ "user_id": user_id}, {
+            "email": req.body.email,
+            "phone": req.body.phone,
+            "gender": req.body.gender,
+            "age": req.body.age,
+            "name": req.body.name,
+            "surname": req.body.surname
+        }); 
 
-
-
-    result ? res.json({"message": "success"}) : res.json({"message": "fail"})
+        result ? res.json({"message": "success"}) : res.json({"message": "fail"})
+    }
 
 })
 
@@ -79,33 +83,22 @@ user ? res.json({"message": "success", "auth_token": token}) : res.json({"messag
 })
 
 router.route('/signup').post(async (req, res) => {
-    let content = []
     try {
-
-        user = await User.findOne({ $or:[
-            {'login':req.body.login}, {'email':req.body.email},{'phone': req.body.phone}
-          ]})
-        if (user) res.json({"message": "Такой пользователь существует"})
-
-        content = await User.create({
-            "login": req.body.login,
-            "password": req.body.password,
-            "email": req.body.email,
-            "phone": req.body.phone, //""
-            "name": req.body.name, //''
-            "surname": req.body.surname,
-            "age": req.body.age,
-            "gender": req.body.gender,
-            "role": "user",
-            "tags": req.body.tags, //[]
-            "about": req.body.about,
-            "wanted": req.body.wanted,
-            })
-        console.log(content)
-        res.json(content)
+        user = await User.findOne({'login':req.body.login})
+        if (user) {
+            res.json({"message": "Такой пользователь существует"})
+        } else if(user_creation_validator(req.body)){
+            res.status(403).json({"message" : "Недопустимые значения полей"})
+        } else {
+            user = await User.create({
+                "login": req.body.login,
+                "password": req.body.password
+                })
+            res.json({"message":"success"})
+        }
     }
     catch (err) {
-        throw err
+        res.json({"message":err})
     }
 
 })
