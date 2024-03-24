@@ -133,6 +133,26 @@ router.route('/').post(async (req, res) => {
     }
 })
 
+router.route('/profile').post(async (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    let profile
+    let token = req.body.token
+    let user_id = check_token(token)
+    if (user_id) {
+        try {
+            profile = await User.findOne({"_id": user_id}).exec()
+        }
+        catch (err) {
+            throw err
+        }
+    
+        res.json(profile)
+    } else {
+        await Auth_token.deleteOne({"token": token})
+        res.status(403).json({"message" : "Вы не авторизованы"})
+    }
+})
+
 router.route('/by_tags').post(async (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
     let content = []
