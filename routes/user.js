@@ -70,6 +70,8 @@ router.route('/signin').post(async (req, res) => {
     let user
     //post {"login":,"passsword": }
     try {
+	console.log(req.body.login)
+	console.log(req.body.password)
         user = await User.findOne({$and:[{"login" : req.body.login}, {"password" : req.body.password}]}).exec()
         if (!user) user = await User.findOne({$and:[{"email" : req.body.email}, {"password" : req.body.password}]}).exec()
         if (!user) user = await User.findOne({$and:[{"phone" : req.body.phone}, {"password" : req.body.password}]}).exec()
