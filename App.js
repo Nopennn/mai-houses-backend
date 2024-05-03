@@ -11,7 +11,7 @@ app.use(express.urlencoded({extended: false}))
 app.use(cors())
 
 app.use('/', require('./routes'))
-app.use('/ad', require('./routes/ad'))
+app.use('/houses', require('./routes/ad'))
 app.use('/user', require('./routes/user'))
 
 app.listen(port, () => {
