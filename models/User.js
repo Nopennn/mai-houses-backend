@@ -32,8 +32,6 @@ const schema = new mongoose.Schema({
     },
     photo : {
         type: String,
-        maxlength: 255,
-        minlength: 2,
         trim: true
     },
     email : {
