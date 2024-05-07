@@ -101,7 +101,8 @@ router.route('/signup').post(async (req, res) => {
         } else {
             user = await User.create({
                 "login": req.body.login,
-                "password": req.body.password
+                "password": req.body.password,
+                "role": "user"
                 })
             res.json({"message":"success"})
         }
