@@ -7,7 +7,7 @@ const fun = (body) => {
         name: 'required|string',
         surname: 'required|string',
         photo: 'required|string',
-        email: 'required|string|email',
+        email: 'required|string',
         phone: 'required|string',
         age: 'required|integer',
         gender: ["required", { 'in': ["none", "m" , "f"] }],
