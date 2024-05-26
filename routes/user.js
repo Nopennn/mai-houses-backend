@@ -113,7 +113,7 @@ router.route('/signup').post(async (req, res) => {
 
 })
 
-
+/*
 router.route('/').post(async (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
     let content = []
@@ -133,7 +133,7 @@ router.route('/').post(async (req, res) => {
         res.status(403).json({"message" : "Вы не авторизованы"})
     }
 })
-
+*/
 router.route('/profile').post(async (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
     let profile

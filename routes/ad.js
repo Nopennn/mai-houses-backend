@@ -21,7 +21,7 @@ router.route('/update/:id').post(async (req, res) => {
     let token = req.body.token
     let user_id = check_token(token)
     if (ad_upd_validator(req.body)) {
-        res.status(403).json({"message" : "Недопустимые значения полей"})
+        res.status(403).json({"message" : "Validation error"})
     } else if (!user_id) {
         await Auth_token.deleteOne({"token": token})
         res.status(403).json({"message" : "Вы не авторизованы"})
@@ -73,10 +73,10 @@ router.route('/create').post(async (req, res) => {
     let token = req.body.token
     let user_id = check_token(token)
     if (ad_creation_validator(req.body)) {
-        res.status(403).json({"message" : "Недопустимые значения полей"})
+        res.status(403).json({"message" : "Validation error"})
     } else if (!user_id) {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
+        res.status(403).json({"message" : "Not authoraized"})
     } else {
         let content = []
         let doc = await User.findOne({"_id": user_id}).exec()
@@ -146,7 +146,7 @@ router.route('/').post(async (req, res) => {
         
      } else {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
+        res.status(403).json({"message" : "Not authoraized"})
     }
 })
 
@@ -190,7 +190,7 @@ router.route('/by_tags').post(async (req, res) => {
         
      } else {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
+        res.status(403).json({"message" : "Not authoraized"})
     }
 })
 
@@ -217,7 +217,7 @@ router.route('/moderation_success/:id').post(async (req, res) => {
         
      } else {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
+        res.status(403).json({"message" : "Not authoraized"})
     }
 
 })
@@ -246,7 +246,7 @@ router.route('/moderation_reject/:id').post(async (req, res) => {
         
      } else {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
+        res.status(403).json({"message" : "Not authoraized"})
     }
 
 })
@@ -274,7 +274,7 @@ router.route('/in_moderation').post(async (req, res) => {
         
      } else {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы как админ"})
+        res.status(403).json({"message" : "Not admin"})
     }
 })
 
@@ -300,7 +300,7 @@ router.route('/:id').post(async (req, res) => {
         
      } else {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
+        res.status(403).json({"message" : "Not authoraized"})
     }
 
    
@@ -327,7 +327,7 @@ router.route('/by_user_id/:user_id').post(async (req, res) => {
         
      } else {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
+        res.status(403).json({"message" : "Not authoraized"})
     }
 })
 
@@ -350,7 +350,7 @@ router.route('/all_user_ads/').post(async (req, res) => {
         
      } else {
         await Auth_token.deleteOne({"token": token})
-        res.status(403).json({"message" : "Вы не авторизованы"})
+        res.status(403).json({"message" : "Not authoraized"})
     }
 })
 

@@ -10,7 +10,7 @@ const fun = (body) => {
         email: 'required|string',
         phone: 'required|string',
         age: 'required|integer',
-        gender: 'required|string|max:6',
+        gender: ["required", { 'in': ["none", "m" , "f"] }],
         about: 'required|string',
         wanted: 'required|string',
         tags: 'required|array',
